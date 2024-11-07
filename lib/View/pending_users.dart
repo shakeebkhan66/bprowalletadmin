@@ -1,8 +1,12 @@
+import 'package:bpro_wallet_admin/View/admin_panel.dart';
+import 'package:bpro_wallet_admin/providers/deposit_detail_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PendingUsers extends StatefulWidget {
   final List<Map<String, String>> pendingUsers;
-  PendingUsers({required this.pendingUsers, Key? key});
+
+  const PendingUsers({super.key, required this.pendingUsers});
 
   @override
   State<PendingUsers> createState() => _PendingUsersState();
@@ -13,25 +17,23 @@ class _PendingUsersState extends State<PendingUsers> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
-        title: Text(
-          'Pending Users',
-          style:
-              TextStyle(color: Colors.white, fontFamily: 'Kanit', fontSize: 20),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.white,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        )
-      ),
+          backgroundColor: Colors.green,
+          title: const Text(
+            'Pending Users',
+            style: TextStyle(color: Colors.white, fontFamily: 'Kanit', fontSize: 20),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            color: Colors.white,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )),
       body: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: const TextSelectionThemeData(
-            cursorColor: Colors.green, // Change global cursor color here
-            selectionHandleColor: Colors.green, // Change handle color here
+            cursorColor: Colors.green,
+            selectionHandleColor: Colors.green,
           ),
         ),
         child: Padding(
@@ -46,67 +48,74 @@ class _PendingUsersState extends State<PendingUsers> {
                     onTap: () {
                       showDialog(
                         context: context,
-                        builder: (context) => UserDetailDialog(),
+                        builder: (context) => UserDetailDialog(
+                          depositUserId: transaction['id'].toString(),
+                          stateOfUser: transaction['stateOfUser'].toString(),
+                        ),
                       );
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: const Color.fromARGB(255, 26, 153, 30),
-                            width: 2),
+                        border: Border.all(color: const Color.fromARGB(255, 26, 153, 30), width: 2),
                       ),
                       child: Column(
                         children: [
                           ListTile(
                             title: Text(
                               transaction['name']!,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15),
+                              style: const TextStyle(color: Colors.black, fontFamily: 'Kanit', fontSize: 15),
                             ),
                             subtitle: Text(
                               transaction['number']!,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15),
+                              style: const TextStyle(color: Colors.black, fontFamily: 'Kanit', fontSize: 15),
                             ),
                             leading: const Icon(Icons.person),
                             trailing: Text(
                               'Rs: ${transaction['amount']}',
-                              style: const TextStyle(
-                                  fontSize: 15, fontFamily: 'Kanit'),
+                              style: const TextStyle(fontSize: 15, fontFamily: 'Kanit'),
                             ),
                           ),
-                          Divider(),
+                          const Divider(),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                transaction['stateOfUser'].toString(),
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontFamily: 'Kanit',
+                                    color: transaction['stateOfUser'] == 'inActive' ? Colors.red : Colors.green),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
                           Row(
                             children: [
                               const SizedBox(width: 10),
-                              Text('${transaction['status']!}',
+                              Text(transaction['status']!,
                                   style: TextStyle(
                                       fontSize: 15,
                                       fontFamily: 'Kanit',
-                                      color: (transaction['status'] ==
-                                              'BetPro Inactive')
-                                          ? Colors.red
-                                          : Colors.green)),
+                                      color: (transaction['status'] == 'BetPro Inactive') ? Colors.red : Colors.green)),
                               const Spacer(),
-                              Text(transaction['date']!,
-                              style: TextStyle(
-                                fontFamily: 'Kanit'),
+                              Text(
+                                transaction['date']!,
+                                style: const TextStyle(fontFamily: 'Kanit'),
                               ),
                               const SizedBox(width: 10),
                             ],
                           ),
-                          SizedBox(height: 5)
+                          const SizedBox(height: 5)
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 10)
+                  const SizedBox(height: 10)
                 ],
               );
             },
@@ -118,14 +127,56 @@ class _PendingUsersState extends State<PendingUsers> {
 }
 
 class UserDetailDialog extends StatefulWidget {
-  const UserDetailDialog({super.key});
+  final String depositUserId;
+  final String stateOfUser;
+
+  const UserDetailDialog({super.key, required this.depositUserId, required this.stateOfUser});
 
   @override
   State<UserDetailDialog> createState() => _UserDetailDialogState();
 }
 
 class _UserDetailDialogState extends State<UserDetailDialog> {
-  bool isSwitched = false;
+  late bool isSwitched;
+  bool _isLoading = false;
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    isSwitched = widget.stateOfUser == 'active';
+  }
+
+  Future<void> _updateUserDetails() async {
+    final String username = _usernameController.text.trim();
+    final String password = _passwordController.text.trim();
+    final String newStateOfUser = isSwitched ? 'active' : 'inActive';
+
+    print("stateOfUser $newStateOfUser");
+
+    try {
+        print("abak");
+          setState(() {
+            _isLoading = true;
+          });
+          await Provider.of<DepositDetailsProvider>(context, listen: false)
+              .updateBProAccountDetails(widget.depositUserId, newStateOfUser, username, password);
+          await Future.delayed(const Duration(seconds: 2));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('BPro Account Created')));
+
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error updating user details: $e')));
+    }
+    finally {
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AdminPanel()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -135,376 +186,87 @@ class _UserDetailDialogState extends State<UserDetailDialog> {
         child: SingleChildScrollView(
           child: Stack(
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 18),
-                  Container(
-                      height: 45,
-                      child: TextField(
-                        style: TextStyle(
-                            fontFamily: 'Kanit'
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'Full Name',
-                          labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'Kanit'
-                          ),
-                          border:
-                          OutlineInputBorder(
-                              borderRadius:
-                              BorderRadius
-                                  .circular(
-                                  10)),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green, width: 2.0),
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          ),
-
-                        ),
-                      )),
-                  const SizedBox(height: 10),
-                  Container(
-                      height: 45,
-                      child: TextField(
-                        style: TextStyle(
-                            fontFamily: 'Kanit'
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'Login By',
-                          labelStyle: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'Kanit',
-
-                          ),
-                          border:
-                          OutlineInputBorder(
-                              borderRadius:
-                              BorderRadius
-                                  .circular(
-                                  10)),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green, width: 2.0),
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          ),
-                        ),
-                      )),
-                  const SizedBox(height: 10),
-                  Container(
-                      height: 45,
-                      child: TextField(
-                        style: TextStyle(
-                            fontFamily: 'Kanit'
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'WhatsApp',
-                          labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'Kanit'
-                          ),
-                          border:
-                          OutlineInputBorder(
-                              borderRadius:
-                              BorderRadius
-                                  .circular(
-                                  10)),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green, width: 2.0),
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          ),
-                        ),
-                      )),
-                  const SizedBox(height: 10),
-                  Container(
-                      height: 45,
-                      child: TextField(
-                        style: TextStyle(
-                            fontFamily: 'Kanit'
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'Kanit'
-                          ),
-                          border:
-                          OutlineInputBorder(
-                              borderRadius:
-                              BorderRadius
-                                  .circular(
-                                  10)),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green, width: 2.0),
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          ),
-                        ),
-                      )),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                            height: 45,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                              BorderRadius
-                                  .circular(10),
-                            ),
-                            child: TextField(
-                              style: TextStyle(
-                                  fontFamily: 'Kanit'
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Amount',
-                                labelStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: 'Kanit'
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 10),
+                        Card(
+                          elevation: 5,
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  width: double.infinity,
+                                  height: 45,
+                                  child: Text(
+                                    'BetPro Account',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Kanit',
+                                        fontSize: 20),
+                                  ),
                                 ),
-                                border: OutlineInputBorder(
-                                    borderRadius:
-                                    BorderRadius
-                                        .circular(
-                                        10)),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.green, width: 2.0),
-                                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                ),
-                              ),
-                            )),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            showDialog(
-                                context: context,
-                                builder:
-                                    (context) =>
-                                    AlertDialog(
-                                      title: const Text(
-                                        'Confirmation',
-                                        style: TextStyle(
-                                            fontFamily: 'Kanit'
-
+                                SizedBox(
+                                    height: 45,
+                                    child: TextField(
+                                      controller: _usernameController,
+                                      style: const TextStyle(fontFamily: 'Kanit'),
+                                      decoration: InputDecoration(
+                                        labelText: 'BetPro Username',
+                                        labelStyle: const TextStyle(color: Colors.black, fontFamily: 'Kanit'),
+                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.green, width: 2.0),
+                                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                         ),
                                       ),
-                                      content:
-                                      const Text(
-                                        'Are you sure you want to update',
-                                        style: TextStyle(
-                                            fontFamily: 'Kanit'
-
-                                        ),),
-                                      actions: [
-                                        TextButton(
-                                            onPressed:
-                                                () {
-                                              Navigator.pop(context);
-                                            },
-                                            child:
-                                            const Text('No',
-                                              style: TextStyle(
-                                                  fontFamily: 'Kanit',
-                                                  color: Colors.black
-
-                                              ),)),
-                                        TextButton(
-                                            onPressed:
-                                                () {
-                                              Navigator.pop(context);
-                                            },
-                                            child:
-                                            const Text('Yes',
-                                              style: TextStyle(
-                                                  fontFamily: 'Kanit',
-                                                  color: Colors.black
-
-                                              ),)),
-                                      ],
-                                    ));
-                          },
-                          child: Container(
-                              decoration:
-                              BoxDecoration(
-                                color: Colors.green,
-                                borderRadius:
-                                BorderRadius
-                                    .circular(10),
-                              ),
-                              height: 45,
-                              child: const Center(
-                                child: Text(
-                                  'Update',
-                                  style: TextStyle(
-                                      fontFamily: 'Kanit',
-                                      color: Colors
-                                          .white),
-                                ),
-                              )),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Card(
-                    elevation: 5,
-                    child: Padding(
-                      padding:
-                      const EdgeInsets.all(5.0),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 45,
-                            child: const Text(
-                              'BetPro Account',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight:
-                                  FontWeight.bold,
-                                  fontFamily: 'Kanit',
-                                  fontSize: 20),
-                            ),
-                          ),
-                          Container(
-                              height: 45,
-                              child: TextField(
-                                style: TextStyle(
-                                    fontFamily: 'Kanit'
-                                ),
-                                decoration: InputDecoration(
-                                  labelText:
-                                  'BetPro Username',
-                                  labelStyle: TextStyle(
+                                    )),
+                                const SizedBox(height: 10),
+                                TextField(
+                                  controller: _passwordController,
+                                  style: const TextStyle(fontFamily: 'Kanit'),
+                                  decoration: InputDecoration(
+                                    labelText: 'BetPro Password',
+                                    labelStyle: const TextStyle(
                                       color: Colors.black,
-                                      fontFamily: 'Kanit'
-
-                                  ),
-                                  border: OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius
-                                          .circular(
-                                          10)),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.green, width: 2.0),
-                                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                      fontFamily: 'Kanit',
+                                    ),
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.green, width: 2.0),
+                                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                    ),
                                   ),
                                 ),
-                              )),
-                          const SizedBox(height: 10),
-                          Container(
-                              child: TextField(
-                                style: TextStyle(
-                                    fontFamily: 'Kanit'
+                                const SizedBox(height: 10),
+                                SwitchListTile(
+                                  title: const Text('Activate',
+                                      style: TextStyle(
+                                        fontFamily: 'Kanit',
+                                      )),
+                                  value: isSwitched,
+                                  onChanged: (value) async {
+                                    setState(() {
+                                      isSwitched = value;
+                                    });
+                                    await _updateUserDetails();
+                                  },
+                                  activeColor: Colors.green,
+                                  activeTrackColor: Colors.green.withOpacity(0.5),
+                                  inactiveThumbColor: Colors.grey,
+                                  inactiveTrackColor: Colors.grey.withOpacity(0.5),
                                 ),
-                                decoration: InputDecoration(
-                                  labelText:
-                                  'BetPro Password',
-                                  labelStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: 'Kanit',
-                                  ),
-                                  border: OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius
-                                          .circular(
-                                          10)),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.green, width: 2.0),
-                                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                  ),
-                                ),
-                              )),
-                          const SizedBox(height: 10),
-                          SwitchListTile(
-                            title: const Text(
-                                'Activate',
-                                style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                )),
-                            value: isSwitched,
-                            onChanged: (value) {
-                              setState(() {
-                                isSwitched = value;
-                              });
-                            },
-                            activeColor: Colors.green,
-                            activeTrackColor: Colors
-                                .green
-                                .withOpacity(0.5),
-                            inactiveThumbColor:
-                            Colors.grey,
-                            inactiveTrackColor: Colors
-                                .grey
-                                .withOpacity(0.5),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Card(
-                    child: Padding(
-                      padding:
-                      const EdgeInsets.all(5.0),
-                      child: Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment
-                            .spaceBetween,
-                        children: [
-                          const Text(
-                            'CONNECT TO WHATSAPP',
-                            style: TextStyle(
-                                fontFamily: 'Kanit'
+                              ],
                             ),
                           ),
-                          Image.asset(
-                            'assets/images/whatsapp_icon.png',
-                            height: 30,
-                          ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius:
-                      BorderRadius.circular(10),
-                    ),
-                    child: const Center(
-                        child: Text(
-                          'ENABLE/DISABLE USER',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Kanit'
-                          ),
-                        )),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius:
-                      BorderRadius.circular(10),
-                    ),
-                    child: const Center(
-                        child: Text(
-                          'SHOW USER HISTORY',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Kanit'
-                          ),
-                        )),
-                  ),
-                ],
-              ),
               Positioned(
                 top: -15,
                 right: -15,

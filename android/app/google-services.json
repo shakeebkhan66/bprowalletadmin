@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1012997214299",
+    "project_id": "bpro-f4ef0",
+    "storage_bucket": "bpro-f4ef0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012997214299:android:e257ec6672e24fa66aaf7e",
+        "android_client_info": {
+          "package_name": "com.example.bpro_app_wallet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBadv6c0PmBUoIlR7-Z4UeviHxdioFmnCo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012997214299:android:8f05de60bf4611ce6aaf7e",
+        "android_client_info": {
+          "package_name": "com.example.bpro_wallet_admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBadv6c0PmBUoIlR7-Z4UeviHxdioFmnCo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

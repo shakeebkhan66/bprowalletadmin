@@ -1,4 +1,8 @@
+import 'package:bpro_wallet_admin/providers/withdraw_detail_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/deposit_detail_provider.dart';
 
 class ViewHistory extends StatefulWidget {
   const ViewHistory({super.key});
@@ -10,28 +14,41 @@ class ViewHistory extends StatefulWidget {
 class _ViewHistoryState extends State<ViewHistory> {
   @override
   Widget build(BuildContext context) {
+    final depositProvider = Provider.of<DepositDetailsProvider>(context, listen: false);
+    // final withdrawProvider = Provider.of<WithdrawDetailProvider>(context, listen: false);
+    // int totalApprovedDeposits = depositProvider.getTodayApprovedDepositsCount() +
+    //     depositProvider.getYesterdayApprovedDepositsCount();
+    // int totalRejectedDeposits = depositProvider.getTodayApprovedDepositsCount() +
+    //     depositProvider.getYesterdayRejectedDepositsCount();
+    // int totalDepositsCount = depositProvider.getTodayApprovedDepositsCount() +
+    //     depositProvider.getTodayRejectedDepositsCount() +
+    //     depositProvider.getYesterdayApprovedDepositsCount() +
+    //     depositProvider.getYesterdayRejectedDepositsCount() +
+    //     depositProvider.getTodayPendingCount() +
+    //     depositProvider.getYesterdayPendingCount();
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.green,
-          title: const Text('History',
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'Kanit',
-          ),
+          title: const Text(
+            'History',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Kanit',
+            ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            color: Colors.white,
-            onPressed: () {
-              Navigator.pop(context);
-            }),
+              icon: const Icon(Icons.arrow_back),
+              color: Colors.white,
+              onPressed: () {
+                Navigator.pop(context);
+              }),
         ),
         body: Padding(
           padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Card(
@@ -40,16 +57,14 @@ class _ViewHistoryState extends State<ViewHistory> {
                       color: Colors.green.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: ListTile(
+                    child: const ListTile(
                       leading: Icon(
                         Icons.currency_exchange,
                         size: 40,
                       ),
-                      title: Text('Account Remaining Balance',
-                      style: TextStyle(
-                        fontFamily: 'Kanit',
-                        fontSize: 15
-                      ),
+                      title: Text(
+                        'Account Remaining Balance',
+                        style: TextStyle(fontFamily: 'Kanit', fontSize: 15),
                       ),
                       subtitle: Text(
                         'Rs: 2473742',
@@ -62,67 +77,58 @@ class _ViewHistoryState extends State<ViewHistory> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Card(
                   color: Colors.green.withOpacity(0.8),
                   elevation: 4,
                   child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: const Column(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
                       children: [
-                        Row(
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               'Today Deposit History',
                               style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Today Rejected Deposit',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              '3',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
+                                  fontFamily: 'Kanit', color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            const Text(
+                              'Today Rejected Deposit',
+                              style: TextStyle(
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
+                            ),
                             Text(
+                              depositProvider.getTodayRejectedDepositsCount().toString(),
+                              style: const TextStyle(
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
                               'Today Approved Deposit',
                               style: TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffff9800),
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
+                              depositProvider.getTodayApprovedDepositsCount().toString(),
+                              style: const TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffff9800),
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -130,97 +136,75 @@ class _ViewHistoryState extends State<ViewHistory> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Today Total Deposit',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                              style: TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                              (depositProvider.getTodayApprovedDepositsCount() + depositProvider.getTodayRejectedDepositsCount()).toString(),
+                              style: const TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
-                        Row(
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               'Yesterday Deposit History',
                               style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Yesterday Rejected Deposit',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              '3',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
+                                  fontFamily: 'Kanit', fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            const Text(
+                              'Yesterday Rejected Deposit',
+                              style: TextStyle(
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
+                            ),
                             Text(
+                              depositProvider.getYesterdayRejectedDepositsCount().toString(),
+                              style: const TextStyle(
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
                               'Yesterday Approved Deposit',
                               style: TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffFF9800),
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
+                              depositProvider.getYesterdayApprovedDepositsCount().toString(),
+                              style: const TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffFF9800),
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-            
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Yesterday Total Deposit',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                              style: TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                              (depositProvider.getYesterdayRejectedDepositsCount() + depositProvider.getYesterdayApprovedDepositsCount()).toString(),
+                              style: const TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -228,67 +212,58 @@ class _ViewHistoryState extends State<ViewHistory> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Card(
                   color: Colors.green.withOpacity(0.8),
                   elevation: 4,
                   child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: const Column(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
                       children: [
-                        Row(
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               'Today Withdraw History',
                               style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Today Rejected Withdraw',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              '3',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
+                                  fontFamily: 'Kanit', fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            const Text(
+                              'Today Rejected Withdraw',
+                              style: TextStyle(
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
+                            ),
                             Text(
+                              depositProvider.getTodayRejectedWithdrawalsCount().toString(),
+                              style: const TextStyle(
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
                               'Today Approved Withdraw',
                               style: TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffFF9800),
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
+                              depositProvider.getTodayApprovedWithdrawalsCount().toString(),
+                              style: const TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffFF9800),
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -296,97 +271,75 @@ class _ViewHistoryState extends State<ViewHistory> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Today Total Withdraw',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                              style: TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                              (depositProvider.getTodayApprovedWithdrawalsCount() + depositProvider.getTodayRejectedWithdrawalsCount()).toString(),
+                              style: const TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
-                        Row(
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               'Yesterday Withdraw History',
                               style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Yesterday Rejected Withdraw',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              '3',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
+                                  fontFamily: 'Kanit', fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            const Text(
+                              'Yesterday Rejected Withdraw',
+                              style: TextStyle(
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
+                            ),
                             Text(
+                              depositProvider.getYesterdayRejectedWithdrawalsCount().toString(),
+                              style: const TextStyle(
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
                               'Yesterday Approved Withdraw',
                               style: TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffFF9800),
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
+                              depositProvider.getYesterdayApprovedWithdrawalsCount().toString(),
+                              style: const TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffFF9800),
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-            
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Yesterday Total Withdraw',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                              style: TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                              (depositProvider.getYesterdayApprovedWithdrawalsCount() + depositProvider.getYesterdayRejectedWithdrawalsCount()).toString(),
+                              style: const TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -394,46 +347,42 @@ class _ViewHistoryState extends State<ViewHistory> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Card(
                   color: Colors.green.withOpacity(0.8),
                   elevation: 4,
                   child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: const Column(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
                       children: [
-                        Row(
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               'Total Approved and Rejected Deposits',
                               style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 17,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                  fontFamily: 'Kanit', fontSize: 17, color: Colors.white, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Approved',
                               style: TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffff9800),
                                   fontWeight: FontWeight.bold),
                             ),
-                            Text(
-                              '3',
-                              style: TextStyle(
+                            Text((depositProvider.getTodayApprovedDepositsCount() + depositProvider.getYesterdayApprovedDepositsCount()).toString(),
+                              style: const TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffff9800),
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -441,28 +390,21 @@ class _ViewHistoryState extends State<ViewHistory> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Rejected',
                               style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
                             ),
-                            Text(
-                              '0',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  color: Colors.red,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+                            Text((depositProvider.getTodayRejectedDepositsCount() + depositProvider.getYesterdayRejectedDepositsCount()).toString(),
+                              style: const TextStyle(
+                                  fontFamily: 'Kanit', color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Pending',
                               style: TextStyle(
                                   fontFamily: 'Kanit',
@@ -471,8 +413,8 @@ class _ViewHistoryState extends State<ViewHistory> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
+                              depositProvider.getTodayPendingCount().toString(),
+                              style: const TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
                                   color: Colors.amberAccent,
@@ -480,70 +422,60 @@ class _ViewHistoryState extends State<ViewHistory> {
                             ),
                           ],
                         ),
-            
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Total',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              '3',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: [
+                        //     const Text(
+                        //       'Total',
+                        //       style: TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
+                        //     ),
+                        //     Text(
+                        //       totalDepositsCount.toString(),
+                        //       style: const TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Card(
                   color: Colors.green.withOpacity(0.8),
                   elevation: 4,
                   child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: const Column(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
                       children: [
-                        Row(
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               'Total Approved and Rejected Withdraw',
                               style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 17,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                  fontFamily: 'Kanit', fontSize: 17, color: Colors.white, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Approved',
                               style: TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffFF9800),
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '3',
-                              style: TextStyle(
+                              (depositProvider.getTodayApprovedWithdrawalsCount() + depositProvider.getYesterdayApprovedWithdrawalsCount()).toString(),
+                              style: const TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
-                                  color: Color(0xffFF9800FF),
+                                  color: Color(0xffff9800),
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -551,28 +483,22 @@ class _ViewHistoryState extends State<ViewHistory> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Rejected',
                               style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
+                              (depositProvider.getTodayRejectedWithdrawalsCount() + depositProvider.getYesterdayRejectedWithdrawalsCount()).toString(),
+                              style: const TextStyle(
+                                  fontFamily: 'Kanit', fontSize: 15, color: Colors.red, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Pending',
                               style: TextStyle(
                                   fontFamily: 'Kanit',
@@ -581,8 +507,8 @@ class _ViewHistoryState extends State<ViewHistory> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '0',
-                              style: TextStyle(
+                              (depositProvider.getTodayPendingWithdrawCount() + depositProvider.getYesterdayPendingWithdrawCount()).toString(),
+                              style: const TextStyle(
                                   fontFamily: 'Kanit',
                                   fontSize: 15,
                                   color: Colors.amberAccent,
@@ -590,26 +516,24 @@ class _ViewHistoryState extends State<ViewHistory> {
                             ),
                           ],
                         ),
-            
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Total',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              '3',
-                              style: TextStyle(
-                                  fontFamily: 'Kanit',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: [
+                        //     const Text(
+                        //       'Total',
+                        //       style: TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
+                        //     ),
+                        //     Text(
+                        //       (withdrawProvider.getTodayApprovedWithdrawsCount().toString() +
+                        //           withdrawProvider.getTodayRejectedWithdrawsCount().toString() +
+                        //           withdrawProvider.getYesterdayApprovedWithdrawsCount().toString() +
+                        //           withdrawProvider.getYesterdayRejectedWithdrawsCount().toString() +
+                        //           withdrawProvider.getTodayPendingCount().toString() +
+                        //           withdrawProvider.getYesterdayPendingCount().toString()),
+                        //       style: const TextStyle(fontFamily: 'Kanit', fontSize: 15, fontWeight: FontWeight.bold),
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),
